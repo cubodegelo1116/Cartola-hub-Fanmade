@@ -3388,6 +3388,105 @@ workspace.CurrentCamera.CameraSubject=game.Players.LocalPlayer.Character:WaitFor
 
 local Tab = Window:MakeTab({"Avatar", "rbxassetid://10734952036"})
 
+local isNameActive = false
+local isBioActive = false
+
+local SectionRGBName = Tab:AddSection({
+    Name = "Name RGB"
+})
+
+Tab:AddToggle({
+    Name = "Name RGB",
+    Description = "Enable Name RGB",
+    Default = false,
+    Callback = function(value)
+        isNameActive = value
+        print(value and "RGB Name enabled" or "RGB Name desactivated")
+    end
+})
+
+
+local SectionRGBBio = Tab:AddSection({
+    Name = "RGB BIO"
+})
+
+Tab:AddToggle({
+    Name = "RGB BIO",
+    Description = "enable RGB BIO.",
+    Default = false,
+    Callback = function(value)
+        isBioActive = value
+        print(value and "RGB BIO Enabled" or "RGB BIO desactivated")
+    end
+})
+
+
+local vibrantColors = {
+    Color3.fromRGB(255, 0, 0),   -- Vermelho
+    Color3.fromRGB(0, 255, 0),   -- Verde
+    Color3.fromRGB(0, 0, 255),   -- Azul
+    Color3.fromRGB(255, 255, 0), -- Amarelo
+    Color3.fromRGB(255, 0, 255), -- Magenta
+    Color3.fromRGB(0, 255, 255), -- Ciano
+    Color3.fromRGB(255, 165, 0), -- Laranja
+    Color3.fromRGB(128, 0, 128), -- Roxo
+    Color3.fromRGB(255, 20, 147) -- Rosa choque
+}
+
+spawn(function()
+    while true do
+        if isNameActive then
+            local randomColor = vibrantColors[math.random(#vibrantColors)]
+            local args = {
+                [1] = "PickingRPNameColor",
+                [2] = randomColor
+            }
+            game:GetService("ReplicatedStorage").RE:FindFirstChild("1RPNam1eColo1r"):FireServer(unpack(args))
+        end
+        wait(0.7)
+    end
+end)
+
+spawn(function()
+    while true do
+        if isBioActive then
+            local randomColor = vibrantColors[math.random(#vibrantColors)]
+            local args = {
+                [1] = "PickingRPBioColor",
+                [2] = randomColor
+            }
+            game:GetService("ReplicatedStorage").RE:FindFirstChild("1RPNam1eColo1r"):FireServer(unpack(args))
+        end
+        wait(0.7)
+    end
+end)
+
+local SectionNames = Tab:AddSection({
+    Name = "Add Names to Player"
+})
+
+local names = {
+    {"Anonymus", " Anonymus "},
+    {"KILLER", " KILLER "},
+    {"ERR0R_666", " ERR0R_666 "},
+    {"MI TEAM", " MI TEAM "},
+    {"GHOST", " GHOST "},
+    {"JOKER", " JOKER "},
+    {"ADMIN", " ADMIN "},
+    {"TUBERS93", " TUBERS93 "},
+    {"C00LKID", " C00LKID "},
+    {"GAME ATTACKED BY MI TEAM", " GAME ATTACKED BY MI TEAM "}
+}
+
+for _, name in ipairs(names) do
+    Tab:AddButton({
+        Name = "Name: " .. name[1],
+        Callback = function()
+            game:GetService("ReplicatedStorage").RE["1RPNam1eTex1t"]:FireServer("RolePlayName", name[2])
+        end
+    })
+end
+
 Tab:AddSection({ Name = "Copy Skin" })
 
 
@@ -4559,108 +4658,6 @@ Tab:AddParagraph({
 "Lag Information",
 "Lag effect starts after 35 seconds"
 })
-
-local Tab = Window:MakeTab({"Name", "Paper"})
-
-local isNameActive = false
-local isBioActive = false
-
-local SectionRGBName = Tab:AddSection({
-    Name = "Name RGB"
-})
-
-Tab:AddToggle({
-    Name = "Name RGB",
-    Description = "Enable Name RGB",
-    Default = false,
-    Callback = function(value)
-        isNameActive = value
-        print(value and "RGB Name enabled" or "RGB Name desactivated")
-    end
-})
-
-
-local SectionRGBBio = Tab:AddSection({
-    Name = "RGB BIO"
-})
-
-Tab:AddToggle({
-    Name = "RGB BIO",
-    Description = "enable RGB BIO.",
-    Default = false,
-    Callback = function(value)
-        isBioActive = value
-        print(value and "RGB BIO Enabled" or "RGB BIO desactivated")
-    end
-})
-
-
-local vibrantColors = {
-    Color3.fromRGB(255, 0, 0),   -- Vermelho
-    Color3.fromRGB(0, 255, 0),   -- Verde
-    Color3.fromRGB(0, 0, 255),   -- Azul
-    Color3.fromRGB(255, 255, 0), -- Amarelo
-    Color3.fromRGB(255, 0, 255), -- Magenta
-    Color3.fromRGB(0, 255, 255), -- Ciano
-    Color3.fromRGB(255, 165, 0), -- Laranja
-    Color3.fromRGB(128, 0, 128), -- Roxo
-    Color3.fromRGB(255, 20, 147) -- Rosa choque
-}
-
-spawn(function()
-    while true do
-        if isNameActive then
-            local randomColor = vibrantColors[math.random(#vibrantColors)]
-            local args = {
-                [1] = "PickingRPNameColor",
-                [2] = randomColor
-            }
-            game:GetService("ReplicatedStorage").RE:FindFirstChild("1RPNam1eColo1r"):FireServer(unpack(args))
-        end
-        wait(0.7)
-    end
-end)
-
-spawn(function()
-    while true do
-        if isBioActive then
-            local randomColor = vibrantColors[math.random(#vibrantColors)]
-            local args = {
-                [1] = "PickingRPBioColor",
-                [2] = randomColor
-            }
-            game:GetService("ReplicatedStorage").RE:FindFirstChild("1RPNam1eColo1r"):FireServer(unpack(args))
-        end
-        wait(0.7)
-    end
-end)
-
-local SectionNames = Tab:AddSection({
-    Name = "Add Names to Player"
-})
-
-local names = {
-    {"Anonymus", " Anonymus "},
-    {"KILLER", " KILLER "},
-    {"ERR0R_666", " ERR0R_666 "},
-    {"MI TEAM", " MI TEAM "},
-    {"GHOST", " GHOST "},
-    {"JOKER", " JOKER "},
-    {"ADMIN", " ADMIN "},
-    {"TUBERS93", " TUBERS93 "},
-    {"C00LKID", " C00LKID "},
-    {"GAME ATTACKED BY MI TEAM", " GAME ATTACKED BY MI TEAM "}
-}
-
-for _, name in ipairs(names) do
-    Tab:AddButton({
-        Name = "Name: " .. name[1],
-        Callback = function()
-            game:GetService("ReplicatedStorage").RE["1RPNam1eTex1t"]:FireServer("RolePlayName", name[2])
-        end
-    })
-end
-
 
 local CarTab = Window:MakeTab({"Vehicles", "car"})
 
@@ -5908,27 +5905,7 @@ LocalPlayerTab:AddToggle({
     end
 })
 
-LocalPlayerTab:AddButton({
-    Name = "Spam chat Hacked By MI TEAM",
-    Callback = function()
-        if game:GetService("TextChatService").ChatVersion == Enum.ChatVersion.TextChatService then 
-            game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("msg\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\rServer: Hacked by MI TEAM")
-        else 
-            print("Nadaa")
-    end
-end
-})
 
-LocalPlayerTab:AddButton({
-    Name = "Clear Chat",
-    Callback = function()
-        if game:GetService("TextChatService").ChatVersion == Enum.ChatVersion.TextChatService then 
-            game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("msg2\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\rServer: Chat Cleared")
-        else 
-            print("Nadaa")
-    end
-end
-})
 
 Section = LocalPlayerTab:AddSection({
     Name = "Headsit"
