@@ -2771,7 +2771,7 @@ workspace.CurrentCamera.CameraSubject=game.Players.LocalPlayer.Character:WaitFor
 
 -------------------------------------------------
 -- Lag Laptop Section
-local Section = TrollTab:AddSection({
+local Section = Troll:AddSection({
     Name = "Lag with Laptop"
 })
 
@@ -2803,7 +2803,7 @@ local function lagarJogoLaptop(laptopPart, maxClicks)
 end
 
 -- Toggle que ativa o lag com laptop
-TrollTab:AddToggle({
+Troll:AddToggle({
     Name = "Lag with Laptop",
     Default = false,
     Callback = function(state)
@@ -2827,13 +2827,13 @@ TrollTab:AddToggle({
 })
 
 -- Lag Laptop Paragraph
-TrollTab:AddParagraph({
+Troll:AddParagraph({
 "Lag Information",
 "Lag effect starts after 35 seconds"
 })
 
 -- Lag Phone Section
-local Section = TrollTab:AddSection({
+local Section = Troll:AddSection({
     Name = "Lag with Phone"
 })
 
@@ -2867,7 +2867,7 @@ local function lagarJogoPhone(phonePart, maxClicks)
 end
 
 -- Toggle Lag Phone
-TrollTab:AddToggle({
+Troll:AddToggle({
     Name = "Lag with Phone",
     Default = false,
     Callback = function(state)
@@ -2895,19 +2895,19 @@ TrollTab:AddToggle({
 
 
 -- Lag Phone Paragraph
-TrollTab:AddParagraph({
+Troll:AddParagraph({
 "Lag Information",
 "Lag effect starts after 35 seconds"
 })
 
-local Section = TrollTab:AddSection({
+local Section = Troll:AddSection({
     Name = "Lag with Bomb"
 })
 
 
 local BombActive = false
 
-TrollTab:AddToggle({
+Troll:AddToggle({
     Name = "Lag with Bomb",
     Default = false,
     Callback = function(Value)
@@ -2957,7 +2957,7 @@ TrollTab:AddToggle({
     end
 })
 
-TrollTab:AddParagraph({
+Troll:AddParagraph({
   
 "Lag Information",
 "Lag effect starts after 35 seconds"
