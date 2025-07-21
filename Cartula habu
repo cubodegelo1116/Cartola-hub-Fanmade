@@ -2769,6 +2769,200 @@ workspace.CurrentCamera.CameraSubject=game.Players.LocalPlayer.Character:WaitFor
   end
 })
 
+-------------------------------------------------
+-- Lag Laptop Section
+local Section = TrollTab:AddSection({
+    Name = "Lag with Laptop"
+})
+
+-- Toggle State for Lag Laptop
+local toggles = { LagLaptop = false }
+
+-- Função para clicar na part via ClickDetector
+local function clickLaptopPart(part)
+    local clickDetector = part:FindFirstChildWhichIsA("ClickDetector")
+    if clickDetector then
+        fireclickdetector(clickDetector)
+    else
+        warn("ClickDetector não encontrado na part: "..part.Name)
+    end
+end
+
+-- Função principal de lag
+local function lagarJogoLaptop(laptopPart, maxClicks)
+    local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+    local hrp = character:WaitForChild("HumanoidRootPart")
+
+    local clickCount = 0
+    while toggles.LagLaptop and clickCount < maxClicks do
+        hrp.CFrame = laptopPart.CFrame + Vector3.new(0, 3, 0)
+        clickLaptopPart(laptopPart)
+        clickCount += 1
+        task.wait(0.05) -- Delay pra o servidor processar
+    end
+end
+
+-- Toggle que ativa o lag com laptop
+TrollTab:AddToggle({
+    Name = "Lag with Laptop",
+    Default = false,
+    Callback = function(state)
+        toggles.LagLaptop = state
+        if state then
+            local laptopPart = workspace:FindFirstChild("WorkspaceCom")
+                and workspace.WorkspaceCom:FindFirstChild("001_GiveTools")
+                and workspace.WorkspaceCom["001_GiveTools"]:FindFirstChild("Laptop")
+
+            if laptopPart and laptopPart:IsA("BasePart") then
+                spawn(function()
+                    lagarJogoLaptop(laptopPart, 999999999)
+                end)
+            else
+                warn("Laptop Part não encontrada ou não é uma BasePart.")
+            end
+        else
+            print("Lag with Laptop desativado.")
+        end
+    end
+})
+
+-- Lag Laptop Paragraph
+TrollTab:AddParagraph({
+"Lag Information",
+"Lag effect starts after 35 seconds"
+})
+
+-- Lag Phone Section
+local Section = TrollTab:AddSection({
+    Name = "Lag with Phone"
+})
+
+-- Toggle State for Lag Phone
+toggles.LagPhone = false
+
+-- Função para clicar no ClickDetector da part Phone
+local function clickPhonePart(part)
+    if not part then return end
+    local clickDetector = part:FindFirstChildWhichIsA("ClickDetector")
+    if clickDetector then
+        fireclickdetector(clickDetector)
+    else
+        warn("ClickDetector não encontrado na parte Phone!")
+    end
+end
+
+-- Função principal para lag com phone
+local function lagarJogoPhone(phonePart, maxClicks)
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local hrp = character:WaitForChild("HumanoidRootPart")
+
+    local clickCount = 0
+    while toggles.LagPhone and clickCount < maxClicks do
+        hrp.CFrame = phonePart.CFrame + Vector3.new(0, 3, 0)
+        clickPhonePart(phonePart)
+        clickCount += 1
+        task.wait(0.05) -- ajuste o delay pra controlar a velocidade
+    end
+end
+
+-- Toggle Lag Phone
+TrollTab:AddToggle({
+    Name = "Lag with Phone",
+    Default = false,
+    Callback = function(state)
+        toggles.LagPhone = state
+        if state then
+            local phonePart = workspace:FindFirstChild("WorkspaceCom")
+                and workspace.WorkspaceCom:FindFirstChild("001_CommercialStores")
+                and workspace.WorkspaceCom["001_CommercialStores"]:FindFirstChild("CommercialStorage1")
+                and workspace.WorkspaceCom["001_CommercialStores"]["CommercialStorage1"]:FindFirstChild("Store")
+                and workspace.WorkspaceCom["001_CommercialStores"]["CommercialStorage1"]["Store"]:FindFirstChild("Tools")
+                and workspace.WorkspaceCom["001_CommercialStores"]["CommercialStorage1"]["Store"]["Tools"]:FindFirstChild("Iphone")
+
+            if phonePart and phonePart:IsA("BasePart") then
+                spawn(function()
+                    lagarJogoPhone(phonePart, 999999999)
+                end)
+            else
+                warn("Phone part não encontrada ou não é uma BasePart.")
+            end
+        else
+            print("Lag with Phone desativado.")
+        end
+    end
+})
+
+
+-- Lag Phone Paragraph
+TrollTab:AddParagraph({
+"Lag Information",
+"Lag effect starts after 35 seconds"
+})
+
+local Section = TrollTab:AddSection({
+    Name = "Lag with Bomb"
+})
+
+
+local BombActive = false
+
+TrollTab:AddToggle({
+    Name = "Lag with Bomb",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            BombActive = true
+
+            local Player = game.Players.LocalPlayer
+            local Character = Player.Character or Player.CharacterAdded:Wait()
+            local RootPart = Character:WaitForChild("HumanoidRootPart")
+            local WorkspaceService = game:GetService("Workspace")
+            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+            local Bomb = WorkspaceService:WaitForChild("WorkspaceCom"):WaitForChild("001_CriminalWeapons"):WaitForChild("GiveTools"):WaitForChild("Bomb")
+
+            task.spawn(function()
+                while BombActive do
+                    if Bomb and RootPart then
+                        RootPart.CFrame = Bomb.CFrame
+                        fireclickdetector(Bomb.ClickDetector) -- Aciona o ClickDetector da bomba
+                        task.wait(0.00001) -- Delay mínimo para evitar travamentos
+                    else
+                        task.wait(0.0001) 
+                    end
+                end
+            end)
+
+            task.spawn(function()
+                while BombActive do
+                    if Bomb and RootPart then
+                        local VirtualInputManager = game:GetService("VirtualInputManager")
+                        VirtualInputManager:SendMouseButtonEvent(500, 500, 0, true, game, 0) 
+                        task.wait(1.5)
+                        VirtualInputManager:SendMouseButtonEvent(500, 500, 0, false, game, 0) 
+
+                        -- Executa o FireServer com o nome do jogador
+                        local args = {
+                            [1] = "Bomb" .. Player.Name -- Usa o nome do jogador atual
+                        }
+                        ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Blo1wBomb1sServe1r"):FireServer(unpack(args))
+                    end
+                    task.wait(1.5) -- Intervalo de 1 segundo para clique e FireServer
+                end
+            end)
+        else
+            -- Desativando a funcionalidade
+            BombActive = false
+        end
+    end
+})
+
+TrollTab:AddParagraph({
+  
+"Lag Information",
+"Lag effect starts after 35 seconds"
+})
+-----------------------------------------------------------------
 
 local Tab = Window:MakeTab({"Avatar", "home"})
 
