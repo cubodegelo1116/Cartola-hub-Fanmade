@@ -4379,24 +4379,37 @@ MiscTab:AddToggle({
     end
 })
 
--- Anti Audio All
+local antiAudioConnection
+
 MiscTab:AddToggle({
     Name = "Anti Audio All",
-    Description = "",
     Default = false,
     Callback = function(Value)
-        for _, s in pairs(workspace:GetDescendants()) do
-            if s:IsA("Sound") then
-                if Value then
-                    s:Stop()
-                    s.Volume = 0
-                else
-                    s.Volume = 1
+        local function onDescendantAdded(obj)
+            if obj:IsA("Sound") then
+                obj:Destroy()
+            end
+        end
+
+        if Value then
+            -- Deleta sons que já existem
+            for _, obj in pairs(workspace:GetDescendants()) do
+                if obj:IsA("Sound") then
+                    obj:Destroy()
                 end
+            end
+
+            -- Conecta o evento para deletar sons novos
+            antiAudioConnection = workspace.DescendantAdded:Connect(onDescendantAdded)
+        else
+            if antiAudioConnection then
+                antiAudioConnection:Disconnect()
+                antiAudioConnection = nil
             end
         end
     end
 })
+
 
 local savedTextures = {}
 
@@ -4427,7 +4440,6 @@ local connection = nil
 
 MiscTab:AddToggle({
     Name = "Anti Void",
-    Description = "Te salva do void teletransportando para a posição salva",
     Default = false,
     Callback = function(Value)
         local player = game.Players.LocalPlayer
