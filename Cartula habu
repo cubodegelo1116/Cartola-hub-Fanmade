@@ -4379,28 +4379,6 @@ MiscTab:AddToggle({
     end
 })
 
--- Anti Collision
-MiscTab:AddToggle({
-    Name = "Anti Collision",
-    Description = "",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            for _, v in pairs(workspace:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.CanCollide = false
-                end
-            end
-        else
-            for _, v in pairs(workspace:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.CanCollide = true
-                end
-            end
-        end
-    end
-})
-
 -- Anti Audio All
 MiscTab:AddToggle({
     Name = "Anti Audio All",
@@ -4420,57 +4398,70 @@ MiscTab:AddToggle({
     end
 })
 
--- Anti Lag
+local savedTextures = {}
+
 MiscTab:AddToggle({
     Name = "Anti Lag",
-    Description = "",
     Default = false,
     Callback = function(Value)
         if Value then
+            savedTextures = {} -- limpa tabela
+
             for _, obj in pairs(workspace:GetDescendants()) do
                 if obj:IsA("Decal") or obj:IsA("Texture") then
+                    table.insert(savedTextures, obj:Clone())
                     obj:Destroy()
-                elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") then
-                    obj.Enabled = false
                 end
             end
-            game.Lighting.FogEnd = math.huge
-            game.Lighting.Brightness = 0
-            game.Lighting.GlobalShadows = false
-            settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
         else
-            game.Lighting.FogEnd = 1000
-            game.Lighting.Brightness = 2
-            game.Lighting.GlobalShadows = true
-            settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+            -- Restaurar as texturas salvas
+            for _, cloneObj in pairs(savedTextures) do
+                cloneObj.Parent = workspace
+            end
+            savedTextures = {}
+        end
+    end
+})
+local savedPosition = nil
+local connection = nil
+
+MiscTab:AddToggle({
+    Name = "Anti Void",
+    Description = "Te salva do void teletransportando para a posição salva",
+    Default = false,
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        if Value then
+            -- Salvar posição atual
+            savedPosition = rootPart.Position
+
+            -- Monitorar posição do jogador e teleportar se cair no void
+            connection = game:GetService("RunService").Heartbeat:Connect(function()
+                if rootPart.Position.Y < -20 then -- Ajuste o limite conforme preferir
+                    rootPart.CFrame = CFrame.new(savedPosition)
+                end
+            end)
+
+            -- Atualizar posição salva ao nascer ou teleportar
+            player.CharacterAdded:Connect(function(char)
+                character = char
+                rootPart = character:WaitForChild("HumanoidRootPart")
+                savedPosition = rootPart.Position
+            end)
+        else
+            -- Desconectar o monitoramento
+            if connection then
+                connection:Disconnect()
+                connection = nil
+            end
+            savedPosition = nil
         end
     end
 })
 
--- Anti Void
-MiscTab:AddToggle({
-    Name = "Anti Void",
-    Description = "",
-    Default = false,
-    Callback = function(Value)
-        local existing = workspace:FindFirstChild("AntiVoid")
-        if Value then
-            if not existing then
-                local part = Instance.new("Part")
-                part.Name = "AntiVoid"
-                part.Anchored = true
-                part.Size = Vector3.new(1000, 1, 1000)
-                part.Position = Vector3.new(0, -10, 0)
-                part.Transparency = 1
-                part.Parent = workspace
-            end
-        else
-            if existing then
-                existing:Destroy()
-            end
-        end
-    end
-})
 
 
 local UniversalTab = Window:MakeTab({"Scripts", "home"})
