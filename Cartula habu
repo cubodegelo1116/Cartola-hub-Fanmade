@@ -3040,6 +3040,90 @@ spawn(function()
 end)
 
 local SectionNames = Tab:AddSection({
+    Name = "Color Gradient"
+})
+------------------------------------------
+local RunService = game:GetService("RunService")
+local Remote = game:GetService("ReplicatedStorage").RE:FindFirstChild("1RPNam1eColo1r")
+
+local isNameDegradeActive = false
+local isBioDegradeActive = false
+
+-- Lista de cores disponíveis
+local availableColors = {
+    ["Vermelho"] = Color3.fromRGB(255, 0, 0),
+    ["Verde"] = Color3.fromRGB(0, 255, 0),
+    ["Azul"] = Color3.fromRGB(0, 0, 255),
+    ["Roxo"] = Color3.fromRGB(128, 0, 128),
+    ["Ciano"] = Color3.fromRGB(0, 255, 255),
+    ["Amarelo"] = Color3.fromRGB(255, 255, 0),
+    ["Rosa choque"] = Color3.fromRGB(255, 20, 147),
+    ["Laranja"] = Color3.fromRGB(255, 165, 0)
+}
+
+-- Cor escolhida por padrão
+local degradeColor = availableColors["Vermelho"]
+
+-- DROPDOWN de seleção de cor
+Tab:AddDropdown({
+    Name = "Cor do Degrade",
+    Options = table.getn(availableColors) > 0 and (function()
+        local list = {}
+        for name, _ in pairs(availableColors) do
+            table.insert(list, name)
+        end
+        return list
+    end)() or {"Vermelho"},
+    Default = "Vermelho",
+    Callback = function(value)
+        degradeColor = availableColors[value]
+        print("Cor de degrade selecionada:", value)
+    end
+})
+
+-- Toggle para Nome RP Degrade
+Tab:AddToggle({
+    Name = "Nome RP Degrade",
+    Description = "Degradê suave no nome RP",
+    Default = false,
+    Callback = function(value)
+        isNameDegradeActive = value
+    end
+})
+
+-- Toggle para Bio RP Degrade
+Tab:AddToggle({
+    Name = "BIO RP Degrade",
+    Description = "Degradê suave no BIO RP",
+    Default = false,
+    Callback = function(value)
+        isBioDegradeActive = value
+    end
+})
+
+-- Loop degradê com Lerp suave
+spawn(function()
+    local t = 0
+    while true do
+        t += RunService.RenderStepped:Wait() * (1 / 0.7) -- velocidade = 0.7
+        local lerpValue = math.abs(math.sin(t))
+        local currentColor = Color3.new(
+            degradeColor.R * lerpValue,
+            degradeColor.G * lerpValue,
+            degradeColor.B * lerpValue
+        )
+
+        if isNameDegradeActive then
+            Remote:FireServer("PickingRPNameColor", currentColor)
+        end
+
+        if isBioDegradeActive then
+            Remote:FireServer("PickingRPBioColor", currentColor)
+        end
+    end
+end)
+------------------------------------------
+local SectionNames = Tab:AddSection({
     Name = "Add Names to Player"
 })
 
