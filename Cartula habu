@@ -3061,19 +3061,19 @@ local availableColors = {
     ["Laranja"] = Color3.fromRGB(255, 165, 0)
 }
 
--- Cor escolhida por padrão
+-- Extrair nomes para usar no Dropdown
+local colorNames = {}
+for name, _ in pairs(availableColors) do
+    table.insert(colorNames, name)
+end
+
+-- Cor padrão
 local degradeColor = availableColors["Vermelho"]
 
--- DROPDOWN de seleção de cor
+-- Dropdown com lista de cores
 Tab:AddDropdown({
     Name = "Cor do Degrade",
-    Options = table.getn(availableColors) > 0 and (function()
-        local list = {}
-        for name, _ in pairs(availableColors) do
-            table.insert(list, name)
-        end
-        return list
-    end)() or {"Vermelho"},
+    Options = colorNames,
     Default = "Vermelho",
     Callback = function(value)
         degradeColor = availableColors[value]
@@ -3083,8 +3083,7 @@ Tab:AddDropdown({
 
 -- Toggle para Nome RP Degrade
 Tab:AddToggle({
-    Name = "Nome RP Degrade",
-    Description = "Degradê suave no nome RP",
+    Name = "RP NAME color gradient",
     Default = false,
     Callback = function(value)
         isNameDegradeActive = value
@@ -3094,7 +3093,7 @@ Tab:AddToggle({
 -- Toggle para Bio RP Degrade
 Tab:AddToggle({
     Name = "BIO RP Degrade",
-    Description = "Degradê suave no BIO RP",
+    Description = "RP BIO color gradient",
     Default = false,
     Callback = function(value)
         isBioDegradeActive = value
@@ -3122,6 +3121,7 @@ spawn(function()
         end
     end
 end)
+
 ------------------------------------------
 local SectionNames = Tab:AddSection({
     Name = "Add Names to Player"
