@@ -2975,7 +2975,6 @@ local SectionRGBName = Tab:AddSection({
 
 Tab:AddToggle({
     Name = "Name RGB",
-    Description = "Enable Name RGB",
     Default = false,
     Callback = function(value)
         isNameActive = value
@@ -2990,7 +2989,6 @@ local SectionRGBBio = Tab:AddSection({
 
 Tab:AddToggle({
     Name = "RGB BIO",
-    Description = "enable RGB BIO.",
     Default = false,
     Callback = function(value)
         isBioActive = value
@@ -3083,7 +3081,7 @@ Tab:AddDropdown({
 
 -- Toggle para Nome RP Degrade
 Tab:AddToggle({
-    Name = "RP NAME color gradient",
+    Name = "NAME RP color gradient",
     Default = false,
     Callback = function(value)
         isNameDegradeActive = value
@@ -3092,8 +3090,7 @@ Tab:AddToggle({
 
 -- Toggle para Bio RP Degrade
 Tab:AddToggle({
-    Name = "BIO RP Degrade",
-    Description = "RP BIO color gradient",
+    Name = "BIO RP color gradient",
     Default = false,
     Callback = function(value)
         isBioDegradeActive = value
@@ -3470,7 +3467,6 @@ local selectedAudioID
 -- Adicionar uma textbox para inserir o ID do áudio
 Tab:AddTextBox({
     Name = "Enter Audio or Music ID",
-    Description = "Digite o ID do áudio",
     PlaceholderText = "ID do áudio",
     Callback = function(value)
         selectedAudioID = tonumber(value)
@@ -3485,7 +3481,6 @@ end
 
 Tab:AddDropdown({
     Name = "Select Audio",
-    Description = "Choose an audio from the list",
     Options = audioNames,
     Default = audioNames[1],
     Flag = "selected_audio",
@@ -3533,7 +3528,6 @@ end
 -- Toggle para loop de áudio
 Tab:AddToggle({
     Name = "Loop Play Audio",
-    Description = "Activate the audio loop",
     Default = false,
     Flag = "audio_loop",
     Callback = function(value)
@@ -3635,7 +3629,6 @@ Tab:AddSection({"Pop everyone's ear LOL "})
 -- Toggle para "Estorar ouvido de geral"
 Tab:AddToggle({
     Name = "Pop everyone's ear LOL",
-    Description = "Play audio repeatedly for everyone",
     Default = false,
     Flag = "audio_spam",
     Callback = function(value)
@@ -4567,7 +4560,6 @@ local MiscTab = Window:MakeTab({
 -- Anti Sit
 MiscTab:AddToggle({ 
     Name = "Anti Sit",
-    Description = "",
     Default = false,
     Callback = function(Value)
         local player = game.Players.LocalPlayer
@@ -4629,7 +4621,6 @@ MiscTab:AddToggle({
 -- Anti Fling
 MiscTab:AddToggle({
     Name = "Anti Fling",
-    Description = "",
     Default = false,
     Callback = function(Value)
         if Value then
