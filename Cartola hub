@@ -450,7 +450,8 @@ end
     end
 
     local killDropdown = Troll:AddDropdown({
-        Name = "Choose Target",
+        Name = "Target",
+        Description = "selecione o alvo",
         Options = getPlayerList(),
         Default = "",
         Callback = function(value)
@@ -645,7 +646,8 @@ Troll:AddToggle({
     local MethodSection = Troll:AddSection({ Name = "Métodos" })
 
     Troll:AddDropdown({
-        Name = "Select Method To Kill",
+        Name = "Method",
+        Description = "selecione o metodo",
         Options = {"Bus", "Couch", "Couch Without Going to the Target [BETA]"},
         Default = "",
         Callback = function(value)
