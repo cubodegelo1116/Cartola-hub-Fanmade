@@ -1203,12 +1203,12 @@ local function bounceBall(ball)
     if not ball then return end
     local amplitude = 2
     local duration = 0.1
+
+    local tweenUp = TweenService:Create(ball, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = ball.CFrame * CFrame.new(0, amplitude, 0)})
+    local tweenDown = TweenService:Create(ball, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = ball.CFrame * CFrame.new(0, -amplitude, 0)})
+
     task.spawn(function()
         while ball and ball.Parent and getgenv().flingloop do
-            local startCFrame = ball.CFrame
-            local tweenUp = TweenService:Create(ball, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = startCFrame * CFrame.new(0, amplitude, 0)})
-            local tweenDown = TweenService:Create(ball, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = startCFrame})
-
             tweenUp:Play()
             tweenUp.Completed:Wait()
             tweenDown:Play()
@@ -1224,7 +1224,7 @@ local function FlingBall(target)
     local humanoid = character:WaitForChild("Humanoid")
     local hrp = character:WaitForChild("HumanoidRootPart")
     local backpack = player:WaitForChild("Backpack")
-    local ServerBalls = workspace.WorkspaceCom:WaitForChild("001_SoccerBalls")
+    local ServerBalls = workspace:WaitForChild("WorkspaceCom"):WaitForChild("001_SoccerBalls")
 
     local function GetBall()
         if not backpack:FindFirstChild("SoccerBall") then
@@ -1260,11 +1260,10 @@ local function FlingBall(target)
             bv.Parent = Ball
 
             workspace.CurrentCamera.CameraSubject = thum
-            bounceBall(Ball) -- aqui começa o bounce
+            bounceBall(Ball)
 
             repeat
                 if troot.Velocity.Magnitude > 0 then
-                    -- Posição ajustada com base na velocidade do alvo
                     local pos_x = troot.Position.X + (troot.Velocity.X / 1.5)
                     local pos_y = troot.Position.Y + (troot.Velocity.Y / 1.5)
                     local pos_z = troot.Position.Z + (troot.Velocity.Z / 1.5)
@@ -1288,11 +1287,20 @@ local function FlingBall(target)
     end
 end
 
--- Exemplo de botão para chamar a função (ajuste conforme seu setup)
+-- Botão para usar na MI HUB
 Troll:AddButton({
     Name = "Fling Ball v2",
     Callback = function()
-        FlingBall(game:GetService("Players")[selectedPlayerName])
+        -- Usar selectedPlayerName da sua hub pra pegar o alvo
+        local Players = game:GetService("Players")
+        local target = Players:FindFirstChild(selectedPlayerName)
+        if target then
+            getgenv().flingloop = true
+            FlingBall(target)
+            getgenv().flingloop = false
+        else
+            warn("Jogador não encontrado para flingar.")
+        end
     end
 })
 
