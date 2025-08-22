@@ -4177,6 +4177,36 @@ local function playHouseMusic(musicId)
         game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Player1sHous1e"):FireServer(unpack(houseArgs))
     end
 end
+-------------------------------------------------------------------------------
+-- TextBox para Audio All (Cars, Scooters e Houses)
+CarTab:AddTextBox({
+    Name = "Audio All ID (Gamepass Required)",
+    PlaceholderText = "Enter Music ID for All",
+    Callback = function(value)
+        if not value or value == "" then return end
+        
+        local RE = game:GetService("ReplicatedStorage"):WaitForChild("RE")
+        
+        -- Todos os carros
+        local carEvent = RE:FindFirstChild("1Player1sCa1r")
+        if carEvent then
+            carEvent:FireServer("PickingCarMusicText", value)
+        end
+        
+        -- Todas as scooters
+        local scooterEvent = RE:FindFirstChild("1NoMoto1rVehicle1s")
+        if scooterEvent then
+            scooterEvent:FireServer("PickingScooterMusicText", value)
+        end
+        
+        -- Todas as casas
+        local houseEvent = RE:FindFirstChild("1Player1sHous1e")
+        if houseEvent then
+            houseEvent:FireServer("PickHouseMusicText", value)
+        end
+    end
+})
+--------------------------------------------------------------------------------
 
 CarTab:AddTextBox({
     Name = "Music ID (Gamepass Required)",
