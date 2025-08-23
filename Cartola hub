@@ -1216,6 +1216,301 @@ local function bounceBall(ball)
         end
     end)
 end
+-- Auto Fling Canoa Controlado para Brookhaven RP
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local WorkspaceCom = workspace:WaitForChild("WorkspaceCom")
+local cam = workspace.CurrentCamera
+
+-- Variável global de controle
+local flingActive = false
+
+-- Implementação do Toggle
+Troll:AddToggle({
+    Name = "Auto Fling Canoa",
+    Default = false,
+    Callback = function(state)
+        flingActive = state
+        
+        if not selectedPlayerName or not Players:FindFirstChild(selectedPlayerName) then 
+            print("Error: Player not selected or does not exist")
+            return 
+        end
+        
+        local TargetPlayer = Players[selectedPlayerName]
+        local TargetC = TargetPlayer.Character
+        if not TargetC then
+            print("Error: Target player character not found")
+            return
+        end
+        
+        local TargetH = TargetC:FindFirstChildOfClass("Humanoid")
+        local TargetRP = TargetC:FindFirstChild("HumanoidRootPart")
+        if not TargetRP or not TargetH then
+            warn("Humanoid or RootPart of target not found")
+            return
+        end
+        
+        local char = LocalPlayer.Character
+        local root = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        
+        if not root or not hum then 
+            print("Error: Local player character not found")
+            return 
+        end
+        
+        local originalCFrame = root.CFrame
+        local originalCamSubject = cam.CameraSubject
+        
+        -- Pega a canoa existente
+        local canoeStorage = WorkspaceCom:WaitForChild("001_CanoeStorage")
+        local canoe = canoeStorage:FindFirstChild("Canoe")
+        
+        if not canoe or not canoe:FindFirstChild("VehicleSeat") then
+            warn("Canoa ou assento VehicleSeat não encontrado")
+            return
+        end
+        
+        local seat = canoe.VehicleSeat -- Você se teleporta para VehicleSeat
+        
+        if state then
+            -- Teleporta VOCÊ para VehicleSeat da canoa
+            root.CFrame = seat.CFrame + Vector3.new(0, 1, 0)
+            task.wait(0.1)
+            
+            -- BodyVelocity CONTROLADO para o fling
+            local bv = Instance.new("BodyVelocity")
+            bv.Name = "FlingForce"
+            bv.Velocity = Vector3.new(0, 0, 0)
+            bv.MaxForce = Vector3.new(8000, 8000, 8000)
+            bv.Parent = root
+            
+            -- BodyPosition para mover você (e a canoa) até o alvo
+            local bp = Instance.new("BodyPosition")
+            bp.Name = "MoveToTarget"
+            bp.MaxForce = Vector3.new(16000, 16000, 16000)
+            bp.Position = TargetRP.Position
+            bp.D = 1000
+            bp.P = 10000
+            bp.Parent = root
+            
+            cam.CameraSubject = TargetC:FindFirstChild("Head") or TargetRP
+            print("Fling enabled!")
+            
+            -- Função para verificar se o alvo se sentou nas Pass da canoa
+            local function checkTargetSeated()
+                local pass1 = canoe:FindFirstChild("Pass1")
+                local pass2 = canoe:FindFirstChild("Pass2")
+                
+                if pass1 and pass1.Occupant == TargetH then
+                    return true, pass1
+                elseif pass2 and pass2.Occupant == TargetH then
+                    return true, pass2
+                end
+                return false, nil
+            end
+            
+            -- Loop principal - VOCÊ na canoa se movendo para forçar o alvo sentar nas Pass
+            task.spawn(function()
+                local rotationAngle = 0
+                
+                while flingActive and root and root.Parent and TargetRP and TargetRP.Parent do
+                    task.wait(0.05)
+                    
+                    -- Verificar se o alvo se sentou em Pass1 ou Pass2
+                    local isSeated, seatUsed = checkTargetSeated()
+                    if isSeated then
+                        print("Target player seated in: " .. seatUsed.Name .. " - FLING ACTIVATED!")
+                        
+                        -- Aplicar fling gigante agora que o alvo está na canoa
+                        bv.Velocity = Vector3.new(9e8, 9e8, 9e8)
+                        bv.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+                        
+                        task.wait(1) -- Fling por 1 segundo
+                        break
+                    end
+                    
+                    -- MOVER VOCÊ (e a canoa) para dentro do alvo girando
+                    rotationAngle = rotationAngle + 5
+                    
+                    local targetPosition = TargetRP.Position
+                    local rotation = CFrame.Angles(0, math.rad(rotationAngle), 0)
+                    
+                    -- Mover você (na VehicleSeat) para dentro do alvo
+                    bp.Position = targetPosition
+                    
+                    -- Pequenas variações para as Pass1 e Pass2 encostarem no alvo
+                    local variations = {
+                        Vector3.new(0.5, 0, 0),   -- Pass1 na direita
+                        Vector3.new(-0.5, 0, 0),  -- Pass2 na esquerda  
+                        Vector3.new(0, 0.5, 0),   -- Pass acima
+                        Vector3.new(0, -0.5, 0),  -- Pass abaixo
+                        Vector3.new(0, 0, 0.5),   -- Pass na frente
+                        Vector3.new(0, 0, -0.5)   -- Pass atrás
+                    }
+                    
+                    for _, variation in pairs(variations) do
+                        if flingActive and root and root.Parent and TargetRP and TargetRP.Parent then
+                            bp.Position = targetPosition + variation
+                            task.wait(0.02)
+                            
+                            local seated, seatUsed = checkTargetSeated()
+                            if seated then
+                                print("SUCCESS! Target forced to sit in: " .. seatUsed.Name)
+                                break
+                            end
+                        end
+                    end
+                    
+                    if rotationAngle >= 360 then
+                        rotationAngle = 0
+                    end
+                end
+                
+                -- Cleanup
+                if bv and bv.Parent then
+                    bv:Destroy()
+                end
+                if bp and bp.Parent then
+                    bp:Destroy()
+                end
+                
+                task.wait(1)
+                if root and root.Parent then
+                    root.CFrame = originalCFrame
+                end
+                
+                cam.CameraSubject = originalCamSubject
+                print("Fling disabled!")
+            end)
+            bv.Parent = root
+            
+            -- BodyPosition para manter você DENTRO do alvo
+            local bp = Instance.new("BodyPosition")
+            bp.Name = "StayInTarget"
+            bp.MaxForce = Vector3.new(16000, 16000, 16000)
+            bp.Position = TargetRP.Position -- Ficar na posição do alvo
+            bp.D = 1000 -- Damping alto para suavidade
+            bp.P = 10000 -- Power controlado
+            bp.Parent = root
+            
+            -- Sem PlatformStand para você não travar
+            cam.CameraSubject = TargetC:FindFirstChild("Head") or TargetRP
+            
+            print("Fling enabled!")
+            
+            -- Função para verificar se o alvo se sentou nas seats da canoa
+            local function checkTargetSeated()
+                local pass1 = canoe:FindFirstChild("Pass1")
+                local pass2 = canoe:FindFirstChild("Pass2")
+                
+                if pass1 and pass1.Occupant == TargetH then
+                    return true, pass1
+                elseif pass2 and pass2.Occupant == TargetH then
+                    return true, pass2
+                end
+                return false, nil
+            end
+            
+            -- Loop principal - GIRAR DENTRO DO ALVO
+            task.spawn(function()
+                local rotationAngle = 0
+                
+                while flingActive and root and root.Parent and TargetRP and TargetRP.Parent do
+                    task.wait(0.05) -- Movimento suave
+                    
+                    -- Verificar se o alvo se sentou
+                    local isSeated, seatUsed = checkTargetSeated()
+                    if isSeated then
+                        print("Target player seated in: " .. seatUsed.Name .. " - FLING ACTIVATED!")
+                        
+                        -- Aplicar fling SÓ NO ALVO, não em você
+                        local targetFling = Instance.new("BodyVelocity")
+                        targetFling.MaxForce = Vector3.new(16000, 16000, 16000)
+                        targetFling.Velocity = Vector3.new(
+                            math.random(-100, 100),
+                            math.random(50, 150),
+                            math.random(-100, 100)
+                        )
+                        targetFling.Parent = TargetRP
+                        
+                        -- Remover o fling do alvo após 1 segundo
+                        game:GetService("Debris"):AddItem(targetFling, 1)
+                        
+                        -- Você continua controlado
+                        bp.Position = originalCFrame.Position -- Voltar pra posição original
+                        
+                        task.wait(2)
+                        break -- Sair do loop após fling
+                    end
+                    
+                    -- GIRAR A CANOA DENTRO DO ALVO
+                    rotationAngle = rotationAngle + 5 -- Rotação suave
+                    
+                    -- Manter você DENTRO do alvo com rotação
+                    local targetPosition = TargetRP.Position
+                    local rotation = CFrame.Angles(0, math.rad(rotationAngle), 0)
+                    
+                    -- Atualizar sua posição para DENTRO do alvo girando
+                    bp.Position = targetPosition
+                    root.CFrame = CFrame.new(targetPosition) * rotation
+                    
+                    -- Pequenas variações para forçar contato com as seats
+                    local variations = {
+    Vector3.new(0, 0, 5),   -- frente
+    Vector3.new(0, 0, -5),  -- trás
+                    }
+                    
+                    -- Testar cada variação rapidamente
+                    for _, variation in pairs(variations) do
+                        if flingActive and root and root.Parent and TargetRP and TargetRP.Parent then
+                            bp.Position = targetPosition + variation
+                            root.CFrame = CFrame.new(targetPosition + variation) * rotation
+                            task.wait(0.01)
+                            
+                            local seated, seat = checkTargetSeated()
+                            if seated then
+                                print("SUCCESS! Forced target to sit in: " .. seat.Name)
+                                break
+                            end
+                        end
+                    end
+                    
+                    -- Reset do ângulo
+                    if rotationAngle >= 360 then
+                        rotationAngle = 0
+                    end
+                end
+                
+                -- Cleanup controlado
+                if bv and bv.Parent then
+                    bv:Destroy()
+                end
+                if bp and bp.Parent then
+                    bp:Destroy()
+                end
+                
+                -- Voltar suavemente para posição original
+                task.wait(1)
+                if root and root.Parent then
+                    root.CFrame = originalCFrame
+                end
+                
+                cam.CameraSubject = originalCamSubject
+                print("Fling disabled!")
+            end)
+            
+            print("Auto Fling Canoa enabled for: " .. selectedPlayerName)
+        else
+            -- Desabilitar fling
+            flingActive = false
+        end
+    end
+})
+
+print("Auto Fling Canoa Controlado loaded successfully!")
 
 local function FlingBall(target)
     local players = game:GetService("Players")
