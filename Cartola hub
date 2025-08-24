@@ -1227,7 +1227,7 @@ local cam = workspace.CurrentCamera
 local flingActive = false
 
 -- Implementação do Toggle
-Troll:AddButton({
+Troll:AddToggle({
     Name = "Fling Canoa",
     Default = false,
     Callback = function(state)
