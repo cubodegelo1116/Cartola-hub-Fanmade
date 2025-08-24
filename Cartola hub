@@ -1260,7 +1260,15 @@ Troll:AddToggle({
             print("Error: Local player character not found")
             return 
         end
-        
+
+		if click then
+  			fireclickdetector(click)
+    		print("Botão da canoa clicado com sucesso!")
+    		task.wait(3) -- espera 3 segundos antes de continuar o resto do script
+		else
+    		warn("ClickDetector do botão não encontrado")
+		end
+
         local originalCFrame = root.CFrame
         local originalCamSubject = cam.CameraSubject
         
@@ -3402,15 +3410,15 @@ Tab:AddToggle({
 
 
 local vibrantColors = {
-    Color3.fromRGB(255, 0, 0),   -- Vermelho
-    Color3.fromRGB(0, 255, 0),   -- Verde
-    Color3.fromRGB(0, 0, 255),   -- Azul
-    Color3.fromRGB(255, 255, 0), -- Amarelo
-    Color3.fromRGB(255, 0, 255), -- Magenta
-    Color3.fromRGB(0, 255, 255), -- Ciano
-    Color3.fromRGB(255, 165, 0), -- Laranja
-    Color3.fromRGB(128, 0, 128), -- Roxo
-    Color3.fromRGB(255, 20, 147) -- Rosa choque
+    Color3.fromRGB(255, 0, 0),  
+    Color3.fromRGB(0, 255, 0), 
+    Color3.fromRGB(0, 0, 255), 
+    Color3.fromRGB(255, 255, 0),
+    Color3.fromRGB(255, 0, 255), 
+    Color3.fromRGB(0, 255, 255), 
+    Color3.fromRGB(255, 165, 0), 
+    Color3.fromRGB(128, 0, 128), 
+    Color3.fromRGB(255, 20, 147) 
 }
 
 spawn(function()
@@ -3453,13 +3461,14 @@ local isBioDegradeActive = false
 
 -- Lista de cores disponíveis
 local availableColors = {
+    ["Branco"] = Color3.fromRGB(255, 255, 255),
     ["Vermelho"] = Color3.fromRGB(255, 0, 0),
     ["Verde"] = Color3.fromRGB(0, 255, 0),
     ["Azul"] = Color3.fromRGB(0, 0, 255),
     ["Roxo"] = Color3.fromRGB(128, 0, 128),
     ["Ciano"] = Color3.fromRGB(0, 255, 255),
     ["Amarelo"] = Color3.fromRGB(255, 255, 0),
-    ["Rosa choque"] = Color3.fromRGB(255, 20, 147),
+    ["Rosa (cor de macho kkk)"] = Color3.fromRGB(255, 20, 147),
     ["Laranja"] = Color3.fromRGB(255, 165, 0)
 }
 
@@ -3537,8 +3546,7 @@ local names = {
     {"JOKER", " JOKER "},
     {"ADMIN", " ADMIN "},
     {"TUBERS93", " TUBERS93 "},
-    {"C00LKID", " C00LKID "},
-    {"GAME ATTACKED BY MI TEAM", " GAME ATTACKED BY MI TEAM "}
+    {"C00LKID", " C00LKID "}
 }
 
 for _, name in ipairs(names) do
@@ -3560,7 +3568,7 @@ local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 
 local Target = nil
 
--- FunÃ§Ã£o para obter os nomes dos jogadores
+
 local function GetPlayerNames()
     local PlayerNames = {}
     for _, player in ipairs(Players:GetPlayers()) do
