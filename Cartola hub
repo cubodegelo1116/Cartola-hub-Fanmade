@@ -5354,6 +5354,31 @@ funtab:AddToggle({
     end
 })
 
+local toggles = {}
+
+funtab:AddToggle({
+    Name = "Balls Cleaner",
+    Default = false,
+    Callback = function(state)
+        toggles.LimparBolas = state
+
+        if state then
+            toggles._cleanBallsConnection = game:GetService("RunService").RenderStepped:Connect(function()
+                local ws = game:GetService("Workspace")
+                local com = ws:FindFirstChild("WorkspaceCom")
+                if com and com:FindFirstChild("Handle") then
+                    com.Handle:Destroy()
+                end
+            end)
+        else
+            if toggles._cleanBallsConnection then
+                toggles._cleanBallsConnection:Disconnect()
+                toggles._cleanBallsConnection = nil
+                print("Limpar Bolas desativado")
+            end
+        end
+    end
+})
 
 
 local UniversalTab = Window:MakeTab({"Scripts", "home"})
