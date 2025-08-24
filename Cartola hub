@@ -1216,7 +1216,7 @@ local function bounceBall(ball)
         end
     end)
 end
--- Auto Fling Canoa Controlado para Brookhaven RP
+--Fling Canoa Controlado para Brookhaven RP
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
@@ -1227,8 +1227,8 @@ local cam = workspace.CurrentCamera
 local flingActive = false
 
 -- Implementação do Toggle
-Troll:AddToggle({
-    Name = "Auto Fling Canoa",
+Troll:AddButton({
+    Name = "Fling Canoa",
     Default = false,
     Callback = function(state)
         flingActive = state
@@ -1260,6 +1260,25 @@ Troll:AddToggle({
             print("Error: Local player character not found")
             return 
         end
+
+-- Teleporta até o botão da canoa e clica nele
+local buttonPart = WorkspaceCom:FindFirstChild("001_CanoeCloneButton")
+if buttonPart and buttonPart:FindFirstChild("Button") then
+    local btn = buttonPart.Button
+    local click = btn:FindFirstChildOfClass("ClickDetector")
+    
+    root.CFrame = btn.CFrame + Vector3.new(0, 3, 0) -- teleporta acima do botão
+    task.wait(0.2)
+    
+    if click then
+        fireclickdetector(click)
+        	print("Botão da canoa clicado com sucesso!")
+    	else
+        	warn("ClickDetector do botão não encontrado")
+    	end
+		else
+    		warn("Botão da canoa não encontrado")
+		end
 
 		if click then
   			fireclickdetector(click)
