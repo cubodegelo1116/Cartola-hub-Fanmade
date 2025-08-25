@@ -3397,76 +3397,36 @@ Troll:AddParagraph({
 
 local Tab = Window:MakeTab({"Avatar", "home"})
 
-local isNameActive = false
-local isBioActive = false
+Tab:AddSection({ "Avatar RGB" })
 
-local SectionRGBName = Tab:AddSection({
-    Name = "Name RGB"
-})
+local colors = { "Bright red", "Lime green", "Bright blue", "Bright yellow", "Bright cyan", "Hot pink", "Royal purple" }
+local rgbEnabled = false
+
+local function changeColor(color)
+    local args = { color }
+    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeBodyColor"):FireServer(unpack(args))
+end
+
+local function toggleRGBCharacter(enabled)
+    rgbEnabled = enabled
+    if rgbEnabled then
+        while rgbEnabled do
+            for _, color in ipairs(colors) do
+                if not rgbEnabled then return end
+                changeColor(color)
+                wait(0.1)
+            end
+        end
+    end
+end
 
 Tab:AddToggle({
-    Name = "Name RGB",
+    Name = "RGB Character",
     Default = false,
     Callback = function(value)
-        isNameActive = value
-        print(value and "RGB Name enabled" or "RGB Name desactivated")
+        toggleRGBCharacter(value)
     end
 })
-
-
-local SectionRGBBio = Tab:AddSection({
-    Name = "RGB BIO"
-})
-
-Tab:AddToggle({
-    Name = "RGB BIO",
-    Default = false,
-    Callback = function(value)
-        isBioActive = value
-        print(value and "RGB BIO Enabled" or "RGB BIO desactivated")
-    end
-})
-
-
-local vibrantColors = {
-    Color3.fromRGB(255, 0, 0),  
-    Color3.fromRGB(0, 255, 0), 
-    Color3.fromRGB(0, 0, 255), 
-    Color3.fromRGB(255, 255, 0),
-    Color3.fromRGB(255, 0, 255), 
-    Color3.fromRGB(0, 255, 255), 
-    Color3.fromRGB(255, 165, 0), 
-    Color3.fromRGB(128, 0, 128), 
-    Color3.fromRGB(255, 20, 147) 
-}
-
-spawn(function()
-    while true do
-        if isNameActive then
-            local randomColor = vibrantColors[math.random(#vibrantColors)]
-            local args = {
-                [1] = "PickingRPNameColor",
-                [2] = randomColor
-            }
-            game:GetService("ReplicatedStorage").RE:FindFirstChild("1RPNam1eColo1r"):FireServer(unpack(args))
-        end
-        wait(0.7)
-    end
-end)
-
-spawn(function()
-    while true do
-        if isBioActive then
-            local randomColor = vibrantColors[math.random(#vibrantColors)]
-            local args = {
-                [1] = "PickingRPBioColor",
-                [2] = randomColor
-            }
-            game:GetService("ReplicatedStorage").RE:FindFirstChild("1RPNam1eColo1r"):FireServer(unpack(args))
-        end
-        wait(0.7)
-    end
-end)
 
 local SectionNames = Tab:AddSection({
     Name = "Color Gradient"
@@ -3475,10 +3435,22 @@ local SectionNames = Tab:AddSection({
 local RunService = game:GetService("RunService")
 local Remote = game:GetService("ReplicatedStorage").RE:FindFirstChild("1RPNam1eColo1r")
 
+-- Estados independentes
 local isNameDegradeActive = false
 local isBioDegradeActive = false
 
--- Lista de cores disponíveis
+-- Configurações separadas
+local nameConfig = {
+    color = Color3.fromRGB(255, 0, 0), -- padrão vermelho
+    speed = 0.5 -- padrão
+}
+
+local bioConfig = {
+    color = Color3.fromRGB(0, 0, 255), -- padrão azul
+    speed = 0.5 -- padrão
+}
+
+-- Lista de cores
 local availableColors = {
     ["Branco"] = Color3.fromRGB(255, 255, 255),
     ["Vermelho"] = Color3.fromRGB(255, 0, 0),
@@ -3488,64 +3460,115 @@ local availableColors = {
     ["Ciano"] = Color3.fromRGB(0, 255, 255),
     ["Amarelo"] = Color3.fromRGB(255, 255, 0),
     ["Rosa (cor de macho kkk)"] = Color3.fromRGB(255, 20, 147),
-    ["Laranja"] = Color3.fromRGB(255, 165, 0)
+    ["Laranja"] = Color3.fromRGB(255, 165, 0),
+    ["Rainbow"] = "Rainbow"
 }
 
--- Extrair nomes para usar no Dropdown
+-- Extrair nomes
 local colorNames = {}
 for name, _ in pairs(availableColors) do
     table.insert(colorNames, name)
 end
 
--- Cor padrão
-local degradeColor = availableColors["Vermelho"]
+-- Função rainbow
+local function rainbowColor(t)
+    return Color3.fromHSV(t % 1, 1, 1)
+end
 
--- Dropdown com lista de cores
+-- ======== NAME CONFIG =========
 Tab:AddDropdown({
-    Name = "Cor do Degrade",
+    Name = "Name RP Color",
     Options = colorNames,
     Default = "Vermelho",
     Callback = function(value)
-        degradeColor = availableColors[value]
-        print("Cor de degrade selecionada:", value)
+        nameConfig.color = availableColors[value]
     end
 })
 
--- Toggle para Nome RP Degrade
+Tab:AddSlider({
+    Name = "Velocidade Name",
+    Min = 0,
+    Max = 2,
+    Default = 1,
+    Increment = 0.1, -- permite valores como 0.5, 1.2, 1.5 etc
+    Callback = function(value)
+        nameConfig.speed = value
+    end
+})
+
 Tab:AddToggle({
-    Name = "NAME RP color gradient",
+    Name = "Ativar Name Gradient",
     Default = false,
     Callback = function(value)
         isNameDegradeActive = value
     end
 })
 
--- Toggle para Bio RP Degrade
+-- ======== BIO CONFIG =========
+Tab:AddDropdown({
+    Name = "Bio RP Color",
+    Options = colorNames,
+    Default = "Azul",
+    Callback = function(value)
+        bioConfig.color = availableColors[value]
+    end
+})
+
+Tab:AddSlider({
+    Name = "Velocidade Bio",
+    Min = 0,
+    Max = 2,
+    Default = 1,
+    Increment = 0.1,
+    Callback = function(value)
+        bioConfig.speed = value
+    end
+})
+
 Tab:AddToggle({
-    Name = "BIO RP color gradient",
+    Name = "Ativar Bio Gradient",
     Default = false,
     Callback = function(value)
         isBioDegradeActive = value
     end
 })
 
--- Loop degradê com Lerp suave
+-- Loop degradê separado
 spawn(function()
     local t = 0
     while true do
-        t += RunService.RenderStepped:Wait() * (1 / 0.7) -- velocidade = 0.7
-        local lerpValue = math.abs(math.sin(t))
-        local currentColor = Color3.new(
-            degradeColor.R * lerpValue,
-            degradeColor.G * lerpValue,
-            degradeColor.B * lerpValue
-        )
+        local dt = RunService.RenderStepped:Wait()
+        t += dt
 
+        -- NAME
         if isNameDegradeActive then
+            local currentColor
+            if nameConfig.color == "Rainbow" then
+                currentColor = rainbowColor(t * nameConfig.speed)
+            else
+                local lerpValue = math.abs(math.sin(t * nameConfig.speed * 2))
+                currentColor = Color3.new(
+                    nameConfig.color.R * lerpValue,
+                    nameConfig.color.G * lerpValue,
+                    nameConfig.color.B * lerpValue
+                )
+            end
             Remote:FireServer("PickingRPNameColor", currentColor)
         end
 
+        -- BIO
         if isBioDegradeActive then
+            local currentColor
+            if bioConfig.color == "Rainbow" then
+                currentColor = rainbowColor(t * bioConfig.speed)
+            else
+                local lerpValue = math.abs(math.sin(t * bioConfig.speed * 2))
+                currentColor = Color3.new(
+                    bioConfig.color.R * lerpValue,
+                    bioConfig.color.G * lerpValue,
+                    bioConfig.color.B * lerpValue
+                )
+            end
             Remote:FireServer("PickingRPBioColor", currentColor)
         end
     end
